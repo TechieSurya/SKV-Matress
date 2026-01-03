@@ -1,0 +1,217 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Natural Cotton Theme - Earthy Greens & Warm Beiges */
+    --background: 40 30% 97%;
+    --foreground: 150 30% 15%;
+
+    --card: 40 25% 95%;
+    --card-foreground: 150 30% 15%;
+
+    --popover: 40 30% 97%;
+    --popover-foreground: 150 30% 15%;
+
+    /* Deep Forest Green */
+    --primary: 100 45% 25%;
+    --primary-foreground: 40 30% 97%;
+
+    /* Warm Beige */
+    --secondary: 35 30% 88%;
+    --secondary-foreground: 150 30% 20%;
+
+    /* Soft Sage */
+    --muted: 100 15% 90%;
+    --muted-foreground: 150 20% 40%;
+
+    /* Light Sage Accent */
+    --accent: 100 30% 85%;
+    --accent-foreground: 100 45% 20%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 100 15% 85%;
+    --input: 100 15% 85%;
+    --ring: 100 45% 30%;
+
+    --radius: 0.75rem;
+
+    /* Custom tokens */
+    --cream: 40 40% 94%;
+    --sage: 100 25% 75%;
+    --sage-dark: 100 35% 35%;
+    --forest: 100 50% 20%;
+    --gold: 40 70% 50%;
+    --cotton-white: 40 50% 98%;
+
+    /* Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(100 45% 25% / 0.95), hsl(100 35% 35% / 0.9));
+    --gradient-natural: linear-gradient(180deg, hsl(40 40% 94%), hsl(40 30% 97%));
+    --gradient-sage: linear-gradient(135deg, hsl(100 25% 75% / 0.3), hsl(100 15% 90% / 0.5));
+
+    /* Shadows */
+    --shadow-soft: 0 4px 20px -2px hsl(100 30% 20% / 0.08);
+    --shadow-elevated: 0 12px 40px -8px hsl(100 30% 20% / 0.15);
+    --shadow-card: 0 2px 12px -2px hsl(100 30% 20% / 0.06);
+
+    /* Sidebar */
+    --sidebar-background: 40 25% 95%;
+    --sidebar-foreground: 150 30% 15%;
+    --sidebar-primary: 100 45% 25%;
+    --sidebar-primary-foreground: 40 30% 97%;
+    --sidebar-accent: 100 15% 90%;
+    --sidebar-accent-foreground: 100 45% 20%;
+    --sidebar-border: 100 15% 85%;
+    --sidebar-ring: 100 45% 30%;
+  }
+
+  .dark {
+    --background: 150 30% 8%;
+    --foreground: 40 30% 95%;
+
+    --card: 150 25% 12%;
+    --card-foreground: 40 30% 95%;
+
+    --popover: 150 30% 10%;
+    --popover-foreground: 40 30% 95%;
+
+    --primary: 100 40% 50%;
+    --primary-foreground: 150 30% 8%;
+
+    --secondary: 150 20% 18%;
+    --secondary-foreground: 40 30% 95%;
+
+    --muted: 150 20% 18%;
+    --muted-foreground: 100 15% 65%;
+
+    --accent: 100 25% 25%;
+    --accent-foreground: 100 40% 75%;
+
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 150 20% 20%;
+    --input: 150 20% 20%;
+    --ring: 100 40% 50%;
+
+    --cream: 150 20% 15%;
+    --sage: 100 20% 30%;
+    --sage-dark: 100 30% 45%;
+    --forest: 100 40% 50%;
+    --gold: 40 60% 55%;
+    --cotton-white: 150 20% 12%;
+
+    --sidebar-background: 150 25% 10%;
+    --sidebar-foreground: 40 30% 95%;
+    --sidebar-primary: 100 40% 50%;
+    --sidebar-primary-foreground: 150 30% 8%;
+    --sidebar-accent: 100 25% 25%;
+    --sidebar-accent-foreground: 100 40% 75%;
+    --sidebar-border: 150 20% 20%;
+    --sidebar-ring: 100 40% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  ::selection {
+    @apply bg-gold/30 text-forest;
+  }
+
+  img {
+    @apply block max-w-full;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .gradient-hero {
+    background: var(--gradient-hero);
+  }
+
+  .gradient-natural {
+    background: var(--gradient-natural);
+  }
+
+  .gradient-sage {
+    background: var(--gradient-sage);
+  }
+
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+
+  .shadow-elevated {
+    box-shadow: var(--shadow-elevated);
+  }
+
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-fade-up {
+    animation: fadeUp 0.6s ease-out forwards;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.4s ease-out forwards;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
