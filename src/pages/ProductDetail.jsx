@@ -12,6 +12,7 @@ import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import ProductSchema from '@/components/seo/ProductSchema';
 import ProductCard from '@/components/ProductCard';
+import SizeGuideModal from '@/components/product/SizeGuideModal';
 
 const ProductDetail = () => {
     const { slug } = useParams();
@@ -29,6 +30,7 @@ const ProductDetail = () => {
     const [selectedImage, setSelectedImage] = useState('');
     const [relatedProducts, setRelatedProducts] = useState([]);
     const [openAccordion, setOpenAccordion] = useState('description');
+    const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -66,10 +68,23 @@ const ProductDetail = () => {
 
                 if (productData) {
                     const data = productData;
+
+                    // Standard defaults for mattresses if missing or to enforce consistency
+                    const isMattress = data.category === 'mattress' || data.name.toLowerCase().includes('mattress');
+
+                    const standardSizes = [
+                        { name: 'Single Cot Bed', dimensions: '72 x 36 inches', priceModifier: 0 },
+                        { name: 'Double Cot Bed', dimensions: '72 x 48 inches', priceModifier: 3000 },
+                        { name: 'Queen Size Bed', dimensions: '75 x 60 inches', priceModifier: 6000 },
+                        { name: 'King Size Bed', dimensions: '78 x 72 inches', priceModifier: 10000 }
+                    ];
+
+                    const standardThickness = ['5 Inch', '6 Inch', '7 Inch', '8 Inch'];
+
                     productData = {
                         ...data,
-                        sizes: Array.isArray(data.sizes) ? data.sizes : [],
-                        thickness: Array.isArray(data.thickness) ? data.thickness : null,
+                        sizes: isMattress ? standardSizes : (Array.isArray(data.sizes) ? data.sizes : []),
+                        thickness: isMattress ? standardThickness : (Array.isArray(data.thickness) ? data.thickness : null),
                         features: Array.isArray(data.features) ? data.features : null,
                         images: data.images || [data.image_url],
                     };
@@ -80,10 +95,10 @@ const ProductDetail = () => {
                             id: '1',
                             name: 'Classic Comfort Mattress',
                             category: 'mattress',
-                            price: 8999,
-                            original_price: 11999,
+                            price: 5000,
+                            original_price: 9000,
                             rating: 4.8,
-                            reviews_count: 234,
+                            reviews_count: 5392,
                             badge: 'Bestseller',
                             image_url: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?q=80&w=1000&auto=format&fit=crop',
                             images: [
@@ -95,12 +110,12 @@ const ProductDetail = () => {
                             short_description: 'Handcrafted natural cotton mattress for restful sleep',
                             description: 'Experience the pure comfort of 100% natural Kapok cotton. Our Classic Comfort Mattress is handcrafted by skilled artisans to provide the perfect balance of support and softness. Hypoallergenic and breathable, it keeps you cool in summer and warm in winter.',
                             sizes: [
-                                { name: 'Single', dimensions: '72" x 36"', priceModifier: 0 },
-                                { name: 'Double', dimensions: '72" x 48"', priceModifier: 3000 },
-                                { name: 'Queen', dimensions: '72" x 60"', priceModifier: 6000 },
-                                { name: 'King', dimensions: '72" x 72"', priceModifier: 9000 }
+                                { name: 'Single Cot Bed', dimensions: '72 x 36 inches', priceModifier: 0 },
+                                { name: 'Double Cot Bed', dimensions: '72 x 48 inches', priceModifier: 3000 },
+                                { name: 'Queen Size Bed', dimensions: '75 x 60 inches', priceModifier: 6000 },
+                                { name: 'King Size Bed', dimensions: '78 x 72 inches', priceModifier: 10000 }
                             ],
-                            thickness: ['4 inches', '6 inches', '8 inches'],
+                            thickness: ['5 Inch', '6 Inch', '7 Inch', '8 Inch'],
                             features: ['100% Organic Cotton', 'Hypoallergenic', 'Temperature Regulating', 'Durable Stitching'],
                             in_stock: true
                         },
@@ -108,10 +123,10 @@ const ProductDetail = () => {
                             id: '2',
                             name: 'Premium Orthopedic Mattress',
                             category: 'mattress',
-                            price: 12999,
-                            original_price: 16999,
+                            price: 8000,
+                            original_price: 13000,
                             rating: 4.9,
-                            reviews_count: 189,
+                            reviews_count: 2189,
                             badge: 'Premium',
                             image_url: 'https://images.unsplash.com/photo-1584132967334-10e028bd69f7?q=80&w=1000&auto=format&fit=crop',
                             images: [
@@ -122,12 +137,12 @@ const ProductDetail = () => {
                             short_description: 'Expert spine support with natural cotton comfort',
                             description: 'Designed for those who need extra back support without compromising on natural comfort. The Premium Orthopedic Mattress features a denser cotton core for firm support, promoting healthy spinal alignment while you sleep.',
                             sizes: [
-                                { name: 'Single', dimensions: '72" x 36"', priceModifier: 0 },
-                                { name: 'Double', dimensions: '72" x 48"', priceModifier: 4000 },
-                                { name: 'Queen', dimensions: '72" x 60"', priceModifier: 8000 },
-                                { name: 'King', dimensions: '72" x 72"', priceModifier: 12000 }
+                                { name: 'Single Cot Bed', dimensions: '72 x 36 inches', priceModifier: 0 },
+                                { name: 'Double Cot Bed', dimensions: '72 x 48 inches', priceModifier: 4000 },
+                                { name: 'Queen Size Bed', dimensions: '75 x 60 inches', priceModifier: 8000 },
+                                { name: 'King Size Bed', dimensions: '78 x 72 inches', priceModifier: 12000 }
                             ],
-                            thickness: ['5 inches', '6 inches', '8 inches'],
+                            thickness: ['5 Inch', '6 Inch', '7 Inch', '8 Inch'],
                             features: ['Orthopedic Support', 'High Density Core', 'Back Pain Relief', 'Natural Cooling'],
                             in_stock: true
                         },
@@ -135,10 +150,10 @@ const ProductDetail = () => {
                             id: '3',
                             name: 'Luxury Silk-Cotton Mattress',
                             category: 'mattress',
-                            price: 18999,
-                            original_price: 24999,
+                            price: 12000,
+                            original_price: 18000,
                             rating: 5.0,
-                            reviews_count: 87,
+                            reviews_count: 876,
                             badge: 'Luxury',
                             image_url: 'https://images.unsplash.com/photo-1505693416388-b0346efee535?q=80&w=1000&auto=format&fit=crop',
                             images: [
@@ -148,81 +163,11 @@ const ProductDetail = () => {
                             short_description: 'Premium silk-cotton blend for luxurious comfort',
                             description: 'The ultimate in natural luxury. We blend the finest silk with organic cotton to create a mattress that feels like sleeping on a cloud. Exceptionally soft, breathable, and elegant, it transforms your bedroom into a sanctuary.',
                             sizes: [
-                                { name: 'Queen', dimensions: '72" x 60"', priceModifier: 0 },
-                                { name: 'King', dimensions: '72" x 72"', priceModifier: 5000 }
+                                { name: 'Queen Size Bed', dimensions: '75 x 60 inches', priceModifier: 0 },
+                                { name: 'King Size Bed', dimensions: '78 x 72 inches', priceModifier: 5000 }
                             ],
-                            thickness: ['8 inches', '10 inches'],
+                            thickness: ['6 Inch', '8 Inch', '10 Inch'],
                             features: ['Silk-Cotton Blend', 'Ultra Soft', 'Premium Jacquard Cover', 'Temperature Control'],
-                            in_stock: true
-                        },
-                        {
-                            id: '4',
-                            name: 'Cloud Soft Pillow',
-                            category: 'pillow',
-                            price: 899,
-                            original_price: 1299,
-                            rating: 4.7,
-                            reviews_count: 450,
-                            badge: 'Bestseller',
-                            image_url: 'https://images.unsplash.com/photo-1584132915807-fd1f5fbc078f?q=80&w=1000&auto=format&fit=crop',
-                            images: [
-                                'https://images.unsplash.com/photo-1584132915807-fd1f5fbc078f?q=80&w=1000&auto=format&fit=crop',
-                                'https://images.unsplash.com/photo-1629949009765-40f7f424d19e?q=80&w=1000&auto=format&fit=crop'
-                            ],
-                            short_description: 'Plush organic cotton pillow for neck support',
-                            description: 'Rest your head on pure nature. Our Cloud Soft Pillow is filled with fluffy, organic Kapok cotton that molds to your neck and head for personalized support. Say goodbye to synthetic fillers and hello to natural sleep.',
-                            sizes: [
-                                { name: 'Standard', dimensions: '17" x 27"', priceModifier: 0 },
-                                { name: 'Large', dimensions: '20" x 30"', priceModifier: 300 }
-                            ],
-                            thickness: [],
-                            features: ['Adjustable Loft', 'Machine Washable Cover', 'Hypoallergenic', 'Neck Support'],
-                            in_stock: true
-                        },
-                        {
-                            id: '5',
-                            name: 'Cervical Support Pillow',
-                            category: 'pillow',
-                            price: 1299,
-                            original_price: 1899,
-                            rating: 4.8,
-                            reviews_count: 120,
-                            badge: 'Doctor Recommended',
-                            image_url: 'https://images.unsplash.com/photo-1629949009765-40f7f424d19e?q=80&w=1000&auto=format&fit=crop',
-                            images: [
-                                'https://images.unsplash.com/photo-1629949009765-40f7f424d19e?q=80&w=1000&auto=format&fit=crop',
-                                'https://images.unsplash.com/photo-1584132915807-fd1f5fbc078f?q=80&w=1000&auto=format&fit=crop'
-                            ],
-                            short_description: 'Ergonomic design for neck pain relief',
-                            description: 'Wake up pain-free. This pillow is ergonomically shaped to cradle your neck and align your spine. Ideal for side and back sleepers, it provides the firm support needed to alleviate tension and stiffness.',
-                            sizes: [
-                                { name: 'Standard', dimensions: '15" x 24"', priceModifier: 0 }
-                            ],
-                            thickness: [],
-                            features: ['Ergonomic Contour', 'Firm Support', 'Spine Alignment', 'Breathable Cover'],
-                            in_stock: true
-                        },
-                        {
-                            id: '6',
-                            name: 'Royal Bolster Pillow',
-                            category: 'pillow',
-                            price: 1499,
-                            original_price: 1999,
-                            rating: 4.6,
-                            reviews_count: 95,
-                            badge: 'New',
-                            image_url: 'https://images.unsplash.com/photo-1616627547584-bf28ceeecdb9?q=80&w=1000&auto=format&fit=crop',
-                            images: [
-                                'https://images.unsplash.com/photo-1616627547584-bf28ceeecdb9?q=80&w=1000&auto=format&fit=crop',
-                                'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?q=80&w=1000&auto=format&fit=crop'
-                            ],
-                            short_description: 'Traditional cylindrical pillow for yoga and support',
-                            description: 'Versatile and stylish. Use it for yoga support, as a decorative accent, or for extra comfort while reading in bed. Filled with firm organic cotton, it maintains its shape and provides excellent support.',
-                            sizes: [
-                                { name: 'Standard', dimensions: '30" x 10"', priceModifier: 0 }
-                            ],
-                            thickness: [],
-                            features: ['Multi-purpose', 'Firm Density', 'Traditional Design', 'Durable'],
                             in_stock: true
                         }
                     ];
@@ -409,6 +354,8 @@ const ProductDetail = () => {
                     url: productUrl,
                 }}
             />
+
+            <SizeGuideModal isOpen={isSizeGuideOpen} onClose={() => setIsSizeGuideOpen(false)} />
 
             <div className="min-h-screen bg-gradient-to-b from-cream/50 to-background">
                 <Navbar />
@@ -697,48 +644,65 @@ const ProductDetail = () => {
                                     <div className="space-y-4">
                                         <div className="flex items-center justify-between">
                                             <h3 className="font-display font-bold text-lg text-forest-900">Select Size</h3>
-                                            <button className="text-xs font-medium text-gold-600 hover:text-gold-700 underline underline-offset-4">
+                                            <button
+                                                onClick={() => setIsSizeGuideOpen(true)}
+                                                className="text-xs font-medium text-gold-600 hover:text-gold-700 underline underline-offset-4"
+                                            >
                                                 Size Guide
                                             </button>
                                         </div>
-                                        <div className="grid grid-cols-2 gap-3">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                             {product.sizes.map((size) => (
                                                 <button
                                                     key={size.name}
                                                     onClick={() => setSelectedSize(size.name)}
                                                     className={cn(
-                                                        'relative p-3 rounded-xl border-2 text-left transition-all duration-200 group',
+                                                        'relative p-4 rounded-xl border-2 text-left transition-all duration-200 group flex justify-between items-center',
                                                         selectedSize === size.name
-                                                            ? 'border-forest-900 bg-forest-50/50'
+                                                            ? 'border-forest-900 bg-forest-50'
                                                             : 'border-sage-100 hover:border-forest-200 bg-white'
                                                     )}
                                                 >
-                                                    <div className="flex justify-between items-start mb-1">
+                                                    <div>
                                                         <span className={cn(
-                                                            "font-bold text-base",
+                                                            "font-bold text-base block mb-1",
                                                             selectedSize === size.name ? "text-forest-900" : "text-gray-700"
                                                         )}>{size.name}</span>
-                                                        {selectedSize === size.name && (
-                                                            <div className="w-5 h-5 rounded-full bg-forest-900 flex items-center justify-center">
-                                                                <Check className="w-3 h-3 text-white" />
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                    <p className="text-xs text-muted-foreground mb-2">{size.dimensions}</p>
-                                                    {(() => {
-                                                        const diff = (size.price !== undefined && size.price !== null && size.price !== "")
-                                                            ? Number(size.price) - product.price
-                                                            : (size.priceModifier || 0);
 
-                                                        if (diff > 0) {
-                                                            return (
-                                                                <span className="inline-block px-2 py-1 bg-white rounded-md text-xs font-bold text-gold-600 border border-gold-100">
-                                                                    +₹{diff.toLocaleString()}
+                                                        <div className="flex items-center gap-2">
+                                                            <p className="text-sm text-muted-foreground">{size.dimensions}</p>
+                                                            {selectedThickness && (
+                                                                <span className="text-sm text-muted-foreground hidden sm:inline">
+                                                                    × {selectedThickness}
                                                                 </span>
-                                                            );
-                                                        }
-                                                        return null;
-                                                    })()}
+                                                            )}
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="flex flex-col items-end gap-1">
+                                                        {selectedSize === size.name ? (
+                                                            <div className="w-6 h-6 rounded-full bg-forest-900 flex items-center justify-center shadow-sm">
+                                                                <Check className="w-4 h-4 text-white" />
+                                                            </div>
+                                                        ) : (
+                                                            <div className="w-6 h-6 rounded-full border border-sage-200" />
+                                                        )}
+
+                                                        {(() => {
+                                                            const diff = (size.price !== undefined && size.price !== null && size.price !== "")
+                                                                ? Number(size.price) - product.price
+                                                                : (size.priceModifier || 0);
+
+                                                            if (diff > 0) {
+                                                                return (
+                                                                    <span className="inline-block px-2 py-0.5 bg-white rounded-md text-xs font-bold text-gold-600 border border-gold-100 shadow-sm mt-1">
+                                                                        +₹{diff.toLocaleString()}
+                                                                    </span>
+                                                                );
+                                                            }
+                                                            return null;
+                                                        })()}
+                                                    </div>
                                                 </button>
                                             ))}
                                         </div>
@@ -748,17 +712,19 @@ const ProductDetail = () => {
                                 {/* Thickness Selection */}
                                 {product.thickness && product.thickness.length > 0 && (
                                     <div className="space-y-4">
-                                        <h3 className="font-display font-bold text-lg text-forest-900">Select Thickness</h3>
+                                        <div className="flex items-center justify-between">
+                                            <h3 className="font-display font-bold text-lg text-forest-900">Select Thickness</h3>
+                                        </div>
                                         <div className="flex flex-wrap gap-3">
                                             {product.thickness.map((thickness) => (
                                                 <button
                                                     key={thickness}
                                                     onClick={() => setSelectedThickness(thickness)}
                                                     className={cn(
-                                                        'px-6 py-3 rounded-xl border-2 font-bold text-sm transition-all',
+                                                        'px-5 py-2.5 rounded-full border border-sage-200 font-medium text-sm transition-all',
                                                         selectedThickness === thickness
-                                                            ? 'border-forest-900 bg-forest-900 text-white shadow-lg shadow-forest-900/20'
-                                                            : 'border-sage-100 hover:border-forest-200 text-gray-600 bg-white'
+                                                            ? 'bg-forest-900 text-white border-forest-900 ring-2 ring-forest-200 ring-offset-2'
+                                                            : 'bg-white text-gray-600 hover:border-forest-300 hover:bg-forest-50'
                                                     )}
                                                 >
                                                     {thickness}

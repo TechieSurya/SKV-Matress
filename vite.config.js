@@ -7,14 +7,6 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
-  },
-  plugins: [react()],
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
-  },
-  server: {
     proxy: {
       '/api/storage': {
         target: 'https://firebasestorage.googleapis.com',
@@ -22,5 +14,11 @@ export default defineConfig(({ mode }) => ({
         rewrite: (path) => path.replace(/^\/api\/storage/, '')
       }
     }
+  },
+  plugins: [react()],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
   },
 }));
