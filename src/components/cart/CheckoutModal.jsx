@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Loader2 } from 'lucide-react';
+import { X, Loader2, MapPin, Phone, User, Building, Send } from 'lucide-react';
 
 const CheckoutModal = ({ isOpen, onClose, items, totalPrice }) => {
     const [formData, setFormData] = useState({
@@ -46,7 +46,6 @@ const CheckoutModal = ({ isOpen, onClose, items, totalPrice }) => {
         message += `----------------\nSubtotal: ₹${totalPrice.toLocaleString()}\nShipping: ${shippingCost === 0 ? 'Free' : `₹${shippingCost}`}\n*Total: ₹${finalTotal.toLocaleString()}*\n----------------\nPlease confirm my order.`;
 
         // 2. Redirect to WhatsApp
-        // Using the placeholder number from CTA.jsx, should be updated to real business number
         const phoneNumber = '919876543210';
         const encodedMessage = encodeURIComponent(message);
         const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
@@ -56,122 +55,176 @@ const CheckoutModal = ({ isOpen, onClose, items, totalPrice }) => {
         onClose();
     };
 
+    const InputField = ({ label, icon: Icon, error, ...props }) => (
+        <div className="relative group">
+            <label className="block text-sm font-medium text-forest-900 mb-1.5 ml-1">{label}</label>
+            <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 group-focus-within:text-gold-500 transition-colors">
+                    <Icon className="w-5 h-5" />
+                </div>
+                <input
+                    {...props}
+                    className={`w-full pl-10 pr-4 py-3 rounded-xl border-2 bg-white/50 backdrop-blur-sm transition-all duration-300 outline-none
+                    ${error
+                            ? 'border-red-200 focus:border-red-500 focus:ring-4 focus:ring-red-500/10'
+                            : 'border-sage-100 hover:border-gold-300 focus:border-gold-500 focus:ring-4 focus:ring-gold-500/10'
+                        }`}
+                />
+            </div>
+            {error && (
+                <motion.p
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-red-500 text-xs mt-1.5 ml-1 font-medium"
+                >
+                    {error}
+                </motion.p>
+            )}
+        </div>
+    );
+
+    const shippingCost = totalPrice >= 5000 ? 0 : 199;
+    const finalTotal = totalPrice + shippingCost;
+
     return (
         <AnimatePresence>
             {isOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center sm:p-4">
                     {/* Backdrop */}
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+                        className="fixed inset-0 bg-forest-950/60 backdrop-blur-md"
                     />
 
                     {/* Modal */}
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                        initial={{ opacity: 0, scale: 0.95, y: 100 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                        className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden max-h-[85vh] flex flex-col"
+                        exit={{ opacity: 0, scale: 0.95, y: 100 }}
+                        transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                        className="relative w-full max-w-lg bg-[#fafafa] sm:rounded-3xl rounded-t-3xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col border border-white/20"
                     >
                         {/* Header */}
-                        <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-                            <h2 className="text-xl font-display font-bold text-gray-900">Checkout Details</h2>
+                        <div className="px-6 py-5 border-b border-gray-100 bg-white sticky top-0 z-10 flex items-center justify-between">
+                            <div>
+                                <h2 className="text-2xl font-serif font-bold text-forest-900">Checkout</h2>
+                                <p className="text-sm text-gray-500 mt-0.5">Complete your order details</p>
+                            </div>
                             <button
                                 onClick={onClose}
-                                className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-500 hover:text-gray-700"
+                                className="p-2.5 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-red-500 group"
                             >
-                                <X className="w-5 h-5" />
+                                <X className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
                             </button>
                         </div>
 
                         {/* Body */}
-                        <div className="p-6 overflow-y-auto">
+                        <div className="p-6 overflow-y-auto space-y-6">
+                            {/* Summary Card */}
+                            <div className="bg-sage-50/50 rounded-2xl p-4 border border-sage-100 flex justify-between items-center">
+                                <div>
+                                    <p className="text-sm text-forest-700 font-medium opacity-80">Total Amount to Pay</p>
+                                    <p className="text-2xl font-bold text-forest-900">₹{finalTotal.toLocaleString()}</p>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-xs text-forest-600 bg-white px-2 py-1 rounded-md border border-sage-100 shadow-sm">
+                                        {items.length} Item{items.length !== 1 && 's'}
+                                    </p>
+                                </div>
+                            </div>
+
                             <div className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
-                                    <input
-                                        type="text"
-                                        value={formData.name}
-                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        className={`w-full px-4 py-3 rounded-lg border ${errors.name ? 'border-red-500 focus:ring-red-200' : 'border-gray-200 focus:ring-green-200'} focus:outline-none focus:ring-2 transition-all`}
-                                        placeholder="Enter your name"
-                                    />
-                                    {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
-                                </div>
+                                <InputField
+                                    label="Full Name"
+                                    icon={User}
+                                    type="text"
+                                    placeholder="John Doe"
+                                    value={formData.name}
+                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                    error={errors.name}
+                                />
 
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Mobile Number *</label>
-                                    <input
-                                        type="tel"
-                                        value={formData.mobile}
-                                        onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
-                                        className={`w-full px-4 py-3 rounded-lg border ${errors.mobile ? 'border-red-500 focus:ring-red-200' : 'border-gray-200 focus:ring-green-200'} focus:outline-none focus:ring-2 transition-all`}
-                                        placeholder="Enter 10-digit mobile number"
-                                    />
-                                    {errors.mobile && <p className="text-red-500 text-xs mt-1">{errors.mobile}</p>}
-                                </div>
+                                <InputField
+                                    label="Mobile Number"
+                                    icon={Phone}
+                                    type="tel"
+                                    placeholder="98765 43210"
+                                    value={formData.mobile}
+                                    onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
+                                    error={errors.mobile}
+                                    maxLength={10}
+                                />
 
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Delivery Address *</label>
-                                    <textarea
-                                        value={formData.address}
-                                        onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                                        className={`w-full px-4 py-3 rounded-lg border ${errors.address ? 'border-red-500 focus:ring-red-200' : 'border-gray-200 focus:ring-green-200'} focus:outline-none focus:ring-2 transition-all resize-none h-24`}
-                                        placeholder="Enter full address (House No, Street, Area)"
-                                    />
-                                    {errors.address && <p className="text-red-500 text-xs mt-1">{errors.address}</p>}
+                                <div className="relative group">
+                                    <label className="block text-sm font-medium text-forest-900 mb-1.5 ml-1">Delivery Address</label>
+                                    <div className="relative">
+                                        <div className="absolute top-3.5 left-3 pointer-events-none text-gray-400 group-focus-within:text-gold-500 transition-colors">
+                                            <MapPin className="w-5 h-5" />
+                                        </div>
+                                        <textarea
+                                            value={formData.address}
+                                            onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                                            className={`w-full pl-10 pr-4 py-3 rounded-xl border-2 bg-white/50 backdrop-blur-sm transition-all duration-300 outline-none resize-none h-24
+                                            ${errors.address
+                                                    ? 'border-red-200 focus:border-red-500 focus:ring-4 focus:ring-red-500/10'
+                                                    : 'border-sage-100 hover:border-gold-300 focus:border-gold-500 focus:ring-4 focus:ring-gold-500/10'
+                                                }`}
+                                            placeholder="House No, Street, Landmark..."
+                                        />
+                                    </div>
+                                    {errors.address && <p className="text-red-500 text-xs mt-1.5 ml-1 font-medium">{errors.address}</p>}
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">City *</label>
-                                        <input
-                                            type="text"
-                                            value={formData.city}
-                                            onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                                            className={`w-full px-4 py-3 rounded-lg border ${errors.city ? 'border-red-500 focus:ring-red-200' : 'border-gray-200 focus:ring-green-200'} focus:outline-none focus:ring-2 transition-all`}
-                                            placeholder="City"
-                                        />
-                                        {errors.city && <p className="text-red-500 text-xs mt-1">{errors.city}</p>}
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Pincode *</label>
-                                        <input
-                                            type="text"
-                                            value={formData.pincode}
-                                            onChange={(e) => setFormData({ ...formData, pincode: e.target.value })}
-                                            className={`w-full px-4 py-3 rounded-lg border ${errors.pincode ? 'border-red-500 focus:ring-red-200' : 'border-gray-200 focus:ring-green-200'} focus:outline-none focus:ring-2 transition-all`}
-                                            placeholder="Pincode"
-                                        />
-                                        {errors.pincode && <p className="text-red-500 text-xs mt-1">{errors.pincode}</p>}
-                                    </div>
+                                    <InputField
+                                        label="City"
+                                        icon={Building}
+                                        type="text"
+                                        placeholder="Coimbatore"
+                                        value={formData.city}
+                                        onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                                        error={errors.city}
+                                    />
+                                    <InputField
+                                        label="Pincode"
+                                        icon={MapPin}
+                                        type="text"
+                                        placeholder="641001"
+                                        value={formData.pincode}
+                                        onChange={(e) => setFormData({ ...formData, pincode: e.target.value })}
+                                        error={errors.pincode}
+                                        maxLength={6}
+                                    />
                                 </div>
                             </div>
                         </div>
 
                         {/* Footer */}
-                        <div className="p-6 border-t border-gray-100 bg-gray-50/50">
+                        <div className="p-6 border-t border-gray-100 bg-white sticky bottom-0 z-10 pb-8 sm:pb-6">
                             <button
                                 onClick={handlePlaceOrder}
                                 disabled={isSubmitting}
-                                className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                                className="w-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold py-4 rounded-xl shadow-lg shadow-green-500/20 hover:shadow-xl hover:shadow-green-500/30 transition-all duration-300 active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed group relative overflow-hidden"
                             >
+                                <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
                                 {isSubmitting ? (
                                     <>
                                         <Loader2 className="w-5 h-5 animate-spin" />
-                                        Processing...
+                                        Processing Order...
                                     </>
                                 ) : (
                                     <>
-                                        Place Order on WhatsApp
+                                        <Send className="w-5 h-5" />
+                                        Send Order via WhatsApp
                                     </>
                                 )}
                             </button>
-                            <p className="text-center text-xs text-gray-500 mt-3">
-                                You will be redirected to WhatsApp to send the order details.
+                            <p className="text-center text-xs text-gray-400 mt-4 flex items-center justify-center gap-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                                Secure checkout via WhatsApp
                             </p>
                         </div>
                     </motion.div>

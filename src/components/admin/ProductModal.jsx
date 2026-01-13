@@ -13,6 +13,12 @@ import {
   Settings,
   ImageIcon,
 } from "lucide-react";
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+} from "react-beautiful-dnd";
+
 import { db, storage } from "@/lib/firebase";
 import {
   collection,
@@ -258,6 +264,20 @@ const ProductModal = ({ open, onClose, product, onSave }) => {
 
   if (!open) return null;
 
+  const handleImageDragEnd = (result) => {
+  if (!result.destination) return;
+
+  const items = Array.from(formData.images);
+  const [moved] = items.splice(result.source.index, 1);
+  items.splice(result.destination.index, 0, moved);
+
+  setFormData((prev) => ({
+    ...prev,
+    images: items,
+  }));
+};
+
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
@@ -394,35 +414,66 @@ const ProductModal = ({ open, onClose, product, onSave }) => {
                   </div>
 
                   {formData.images.length > 0 && (
-                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-4">
-                      {formData.images.map((url, index) => (
-                        <div
-                          key={index}
-                          className="relative group aspect-square bg-muted rounded-lg overflow-hidden border border-border shadow-sm"
-                        >
-                          <img
-                            src={url}
-                            alt={`Product ${index + 1}`}
-                            className="w-full h-full object-cover"
-                          />
-                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                            <button
-                              type="button"
-                              onClick={() => removeImage(index)}
-                              className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors transform hover:scale-110"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                          {index === 0 && (
-                            <div className="absolute top-2 left-2 px-2 py-1 bg-black/70 backdrop-blur-md text-white text-[10px] rounded-md font-medium">
-                              Main
-                            </div>
-                          )}
-                        </div>
-                      ))}
+  <DragDropContext onDragEnd={handleImageDragEnd}>
+    <Droppable droppableId="images" direction="horizontal">
+      {(provided) => (
+        <div
+          ref={provided.innerRef}
+          {...provided.droppableProps}
+          className="grid grid-cols-3 sm:grid-cols-4 gap-4"
+        >
+          {formData.images.map((url, index) => (
+            <Draggable
+              key={url}
+              draggableId={url}
+              index={index}
+            >
+              {(provided) => (
+                <div
+                  ref={provided.innerRef}
+                  {...provided.draggableProps}
+                  {...provided.dragHandleProps}
+                  className="relative group aspect-square bg-muted rounded-lg overflow-hidden border border-border shadow-sm cursor-move"
+                >
+                  <img
+                    src={url}
+                    alt={`Product ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+
+                  {/* Delete Overlay */}
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <button
+                      type="button"
+                      onClick={() => removeImage(index)}
+                      className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors transform hover:scale-110"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  {/* Main Image Badge */}
+                  {index === 0 && (
+                    <div className="absolute top-2 left-2 px-2 py-1 bg-black/70 backdrop-blur-md text-white text-[10px] rounded-md font-medium">
+                      Main
                     </div>
                   )}
+
+                  {/* Order Number */}
+                  <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/70 text-white text-[10px] rounded-md">
+                    {index + 1}
+                  </div>
+                </div>
+              )}
+            </Draggable>
+          ))}
+          {provided.placeholder}
+        </div>
+      )}
+    </Droppable>
+  </DragDropContext>
+)}
+
                 </div>
               </div>
 
